@@ -12,7 +12,7 @@
     "check": "npm run check --workspace=@bookleaf/server && npm run build --workspace=@bookleaf/client"
   },
   "engines": {
-    "node": ">=24.11.0",
+    "node": "24.x",
     "npm": ">=10.0.0"
   }
 }

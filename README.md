@@ -79,7 +79,11 @@ Ticket statuses are OPEN, IN_PROGRESS, WAITING_ON_AUTHOR, RESOLVED, and CLOSED. 
 
 JWTs are short-lived and currently stored in browser sessionStorage. Attachments are stored on the server's local disk under server/uploads/. The Socket.IO handshake authenticates the JWT, but ticket rooms, event publishing, and client-side realtime refresh are not implemented yet; ticket updates currently use HTTP requests and reloads.
 
-Docker Compose provides PostgreSQL for local development only. No production client/server container, hosted deployment manifest, CI pipeline, or automated backup configuration is included. Review upload storage, TLS, secret management, database backups, and monitoring before production deployment.
+Docker Compose provides PostgreSQL for local development only. Vercel is configured to build the static client; the Express API still needs a separate production host. No backend deployment manifest, CI pipeline, or automated backup configuration is included. Review upload storage, TLS, secret management, database backups, and monitoring before production deployment.
+
+## Vercel frontend deployment
+
+Connect the Git repository to Vercel and set **Root Directory** to `.` (the repository root). `vercel.json` installs the npm workspaces, builds only the React client, and serves `client/dist`; the root `package.json` pins the build runtime to Node 24.x. Do not set the Root Directory to `client`, because Vercel then cannot access the root workspace manifest and lockfile. The Express API must be hosted separately and routed/configured for the deployed client before authenticated portal features will work.
 
 Tests use mocked Prisma calls and do not require a database connection. They cover authentication, ownership boundaries, admin access, input validation, manual overrides, and isolated AI fallback behavior.
 # BookLeaf-Support
