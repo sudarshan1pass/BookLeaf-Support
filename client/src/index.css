@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Aptos", "Segoe UI", sans-serif;
+}
+
+:root {
+  font-family: var(--font-sans);
+  color: #263630;
+  background: #f5f7f4;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* { box-sizing: border-box; }
+body { min-width: 360px; min-height: 100vh; margin: 0; }
+button, input, textarea { font: inherit; }
+button { cursor: pointer; }
+::selection { background: #d4e7d4; color: #203c2b; }
+
+.portal-sidebar { z-index: 20; background: #153e34; color: white; }
+.brand-mark { display: flex; width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 12px; background: #dcebdc; color: #28513a; }
+.nav-link { display: inline-flex; min-width: max-content; align-items: center; gap: 12px; border-radius: 12px; padding: 11px 12px; color: rgb(255 255 255 / 62%); font-size: 13px; font-weight: 500; transition: color 150ms ease, background 150ms ease; }
+.nav-link:hover { color: white; background: rgb(255 255 255 / 7%); }
+.nav-link-active { color: #fafffa; background: rgb(221 239 219 / 14%); }
+.nav-link-active:hover { background: rgb(221 239 219 / 18%); }
+.panel { border: 1px solid #e7ece7; border-radius: 18px; background: white; box-shadow: 0 2px 7px rgb(31 51 39 / 2%); }
+.book-card { border: 1px solid #e7ece7; border-radius: 18px; background: white; box-shadow: 0 2px 7px rgb(31 51 39 / 2%); transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease; }
+.book-card:hover { transform: translateY(-2px); border-color: #d7e4d5; box-shadow: 0 10px 28px rgb(31 51 39 / 7%); }
+.icon-button { display: inline-flex; height: 34px; width: 34px; align-items: center; justify-content: center; border-radius: 10px; color: #718077; transition: background 150ms ease, color 150ms ease; }
+.icon-button:hover { background: #f0f4ef; color: #38533f; }
+.button-primary, .button-secondary, .button-quiet { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; gap: 8px; border-radius: 11px; padding: 0 15px; font-size: 12px; font-weight: 650; transition: transform 120ms ease, background 150ms ease, border-color 150ms ease; }
+.button-primary { background: #244b36; color: white; box-shadow: 0 3px 7px rgb(28 67 44 / 12%); }
+.button-primary:hover { transform: translateY(-1px); background: #1d412e; }
+.button-secondary { border: 1px solid #dce5dc; background: white; color: #4c6851; }
+.button-secondary:hover { border-color: #c3d5c3; background: #f8fbf7; }
+.button-quiet { color: #748178; }
+.button-quiet:hover { background: #f2f5f1; color: #405348; }
+.field-input { width: 100%; border: 1px solid #dfe6df; border-radius: 11px; background: white; padding: 11px 13px; color: #35483b; font-size: 13px; outline: none; transition: border-color 150ms ease, box-shadow 150ms ease; }
+.field-input::placeholder { color: #a4ada6; }
+.field-input:focus { border-color: #8daf91; box-shadow: 0 0 0 3px rgb(126 167 128 / 13%); }
+.form-label { display: inline-flex; gap: 4px; color: #495a4e; font-size: 12px; font-weight: 650; }
+.filter-chip { border: 1px solid transparent; border-radius: 999px; background: #edf1ec; padding: 8px 13px; color: #748178; font-size: 11px; font-weight: 600; transition: all 150ms ease; }
+.filter-chip:hover { background: #e6ece5; color: #47594d; }
+.filter-chip-active { border-color: #d7e4d6; background: white; color: #37583e; box-shadow: 0 2px 5px rgb(37 62 43 / 5%); }
+.back-link { display: inline-flex; align-items: center; gap: 7px; color: #698171; font-size: 12px; font-weight: 600; }
+.back-link:hover { color: #38583f; }
+.detail-label { display: block; color: #96a098; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.detail-icon { display: flex; height: 31px; width: 31px; flex: none; align-items: center; justify-content: center; border-radius: 10px; background: #eff4ed; color: #638164; }
+.attachment-chip { display: inline-flex; max-width: 100%; align-items: center; gap: 7px; border: 1px solid #e1e7e0; border-radius: 9px; background: white; padding: 7px 9px; color: #607568; font-size: 11px; transition: border-color 150ms ease, background 150ms ease; }
+.attachment-chip:hover { border-color: #c8d9c7; background: #fbfdfb; }
+.book-status-pill { display: inline-flex; border-radius: 999px; background: #edf3ea; padding: 5px 9px; color: #55745a; font-size: 10px; font-weight: 650; text-transform: capitalize; }
+
+@media (max-width: 767px) {
+  .portal-sidebar { position: sticky; top: 0; }
+  .portal-sidebar > div:first-child { padding-top: 12px; padding-bottom: 9px; }
+  .nav-link { padding: 9px 12px; font-size: 12px; }
+  .portal-sidebar nav { padding-bottom: 10px; }
+}

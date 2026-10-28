@@ -1,0 +1,151 @@
+generator client {
+  provider               = "prisma-client"
+  output                 = "../src/generated/prisma"
+  moduleFormat           = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension    = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  AUTHOR
+  ADMIN
+}
+
+enum BookStatus {
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_ON_AUTHOR
+  RESOLVED
+  CLOSED
+}
+
+enum TicketCategory {
+  ROYALTY_AND_PAYMENTS
+  ISBN_AND_METADATA_ISSUES
+  PRINTING_AND_QUALITY
+  DISTRIBUTION_AND_AVAILABILITY
+  BOOK_STATUS_AND_PRODUCTION_UPDATES
+  GENERAL_INQUIRY
+}
+
+enum TicketPriority {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+model User {
+  id           String   @id @default(cuid())
+  fullName     String   @map("full_name") @db.VarChar(120)
+  email        String   @unique @db.VarChar(320)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  books           Book[]
+  tickets         Ticket[]             @relation("TicketAuthor")
+  messages        TicketMessage[]      @relation("MessageSender")
+  assignedTickets Ticket[]             @relation("TicketAssignment")
+  internalNotes   TicketInternalNote[]
+
+  @@index([role])
+  @@map("users")
+}
+
+model Book {
+  id          String     @id @default(cuid())
+  authorId    String     @map("author_id")
+  title       String     @db.VarChar(200)
+  subtitle    String?    @db.VarChar(200)
+  genre       String?    @db.VarChar(80)
+  description String?    @db.Text
+  status      BookStatus @default(DRAFT)
+  isbn        String?    @db.VarChar(20)
+  createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime   @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([authorId, updatedAt])
+  @@map("books")
+}
+
+model Ticket {
+  id              String         @id @default(cuid())
+  authorId        String         @map("author_id")
+  assignedAdminId String?        @map("assigned_admin_id")
+  subject         String         @db.VarChar(200)
+  status          TicketStatus   @default(OPEN)
+  category        TicketCategory @default(GENERAL_INQUIRY)
+  priority        TicketPriority @default(MEDIUM)
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  author        User                 @relation("TicketAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  assignedAdmin User?                @relation("TicketAssignment", fields: [assignedAdminId], references: [id], onDelete: SetNull)
+  messages      TicketMessage[]
+  internalNotes TicketInternalNote[]
+
+  @@index([authorId, updatedAt])
+  @@index([status, updatedAt])
+  @@index([category, priority, updatedAt])
+  @@index([assignedAdminId, status])
+  @@map("tickets")
+}
+
+model TicketMessage {
+  id        String   @id @default(cuid())
+  ticketId  String   @map("ticket_id")
+  senderId  String   @map("sender_id")
+  body      String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  ticket      Ticket             @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  sender      User               @relation("MessageSender", fields: [senderId], references: [id], onDelete: Restrict)
+  attachments TicketAttachment[]
+
+  @@index([ticketId, createdAt])
+  @@map("ticket_messages")
+}
+
+model TicketAttachment {
+  id           String   @id @default(cuid())
+  messageId    String   @map("message_id")
+  storageKey   String   @unique @map("storage_key") @db.VarChar(100)
+  originalName String   @map("original_name") @db.VarChar(255)
+  mimeType     String   @map("mime_type") @db.VarChar(100)
+  sizeBytes    Int      @map("size_bytes")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  message TicketMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+  @@map("ticket_attachments")
+}
+
+model TicketInternalNote {
+  id        String   @id @default(cuid())
+  ticketId  String   @map("ticket_id")
+  adminId   String   @map("admin_id")
+  body      String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  admin  User   @relation(fields: [adminId], references: [id], onDelete: Restrict)
+
+  @@index([ticketId, createdAt])
+  @@map("ticket_internal_notes")
+}
