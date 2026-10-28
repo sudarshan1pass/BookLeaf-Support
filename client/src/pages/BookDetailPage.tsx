@@ -10,13 +10,28 @@ type BookDetails = {
   genre: string | null;
   description: string | null;
   status: "DRAFT" | "IN_REVIEW" | "PUBLISHED";
+  statusLabel: string | null;
   isbn: string | null;
+  publicationDate: string | null;
+  mrp: string | null;
+  authorRoyaltyPerCopy: string | null;
+  totalCopiesSold: number;
+  totalRoyaltyEarned: string;
+  royaltyPaid: string;
+  royaltyPending: string;
+  lastRoyaltyPayoutDate: string | null;
+  printPartner: string | null;
+  availableOn: string[];
   createdAt: string;
   updatedAt: string;
 };
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en", { month: "long", day: "numeric", year: "numeric" }).format(new Date(value));
+}
+
+function formatAmount(value: string | null) {
+  return value === null ? "Not available" : new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(value));
 }
 
 export function BookDetailPage() {
@@ -30,7 +45,7 @@ export function BookDetailPage() {
   return (
     <>
       <Link to="/books" className="back-link mb-6"><ArrowLeft size={15} />Back to My Books</Link>
-      <PageHeading eyebrow="Book details" title={book.title} description={book.subtitle || undefined} action={<BookStatusBadge status={book.status} />} />
+      <PageHeading eyebrow="Book details" title={book.title} description={book.subtitle || undefined} action={<BookStatusBadge status={book.status} label={book.statusLabel} />} />
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(260px,0.75fr)]">
         <section className="panel p-6 md:p-8">
@@ -50,6 +65,21 @@ export function BookDetailPage() {
               <div className="flex gap-3"><span className="detail-icon"><Hash size={16} /></span><span><span className="detail-label">ISBN</span><span className="mt-1 block text-sm text-[#536157]">{book.isbn || "Not assigned"}</span></span></div>
               <div className="flex gap-3"><span className="detail-icon"><CalendarDays size={16} /></span><span><span className="detail-label">Added to BookLeaf</span><span className="mt-1 block text-sm text-[#536157]">{formatDate(book.createdAt)}</span></span></div>
             </div>
+          </section>
+          <section className="panel p-6">
+            <p className="mb-5 text-sm font-semibold text-[#33453a]">Publishing and royalty details</p>
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-5">
+              <div><dt className="detail-label">Publication date</dt><dd className="mt-1 text-sm text-[#536157]">{book.publicationDate ? formatDate(book.publicationDate) : "Not set"}</dd></div>
+              <div><dt className="detail-label">MRP</dt><dd className="mt-1 text-sm text-[#536157]">{formatAmount(book.mrp)}</dd></div>
+              <div><dt className="detail-label">Royalty per copy</dt><dd className="mt-1 text-sm text-[#536157]">{formatAmount(book.authorRoyaltyPerCopy)}</dd></div>
+              <div><dt className="detail-label">Copies sold</dt><dd className="mt-1 text-sm text-[#536157]">{book.totalCopiesSold.toLocaleString("en-IN")}</dd></div>
+              <div><dt className="detail-label">Royalty earned</dt><dd className="mt-1 text-sm text-[#536157]">{formatAmount(book.totalRoyaltyEarned)}</dd></div>
+              <div><dt className="detail-label">Paid</dt><dd className="mt-1 text-sm text-[#536157]">{formatAmount(book.royaltyPaid)}</dd></div>
+              <div><dt className="detail-label">Pending</dt><dd className="mt-1 text-sm font-semibold text-[#536157]">{formatAmount(book.royaltyPending)}</dd></div>
+              <div><dt className="detail-label">Last payout</dt><dd className="mt-1 text-sm text-[#536157]">{book.lastRoyaltyPayoutDate ? formatDate(book.lastRoyaltyPayoutDate) : "Not recorded"}</dd></div>
+              <div className="col-span-2"><dt className="detail-label">Print partner</dt><dd className="mt-1 text-sm text-[#536157]">{book.printPartner || "Not set"}</dd></div>
+              <div className="col-span-2"><dt className="detail-label">Available on</dt><dd className="mt-1 text-sm leading-6 text-[#536157]">{book.availableOn.length ? book.availableOn.join(", ") : "Not listed"}</dd></div>
+            </dl>
           </section>
           <section className="rounded-2xl border border-[#dfe9df] bg-[#eff5ee] p-5">
             <p className="text-sm font-semibold text-[#35513b]">Have a question about this book?</p>

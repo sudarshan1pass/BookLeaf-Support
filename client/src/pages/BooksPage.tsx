@@ -40,7 +40,7 @@ export function BooksPage() {
                 <Link key={book.id} to={`/books/${book.id}`} className="book-card group flex min-h-60 flex-col p-5 md:p-6">
                   <div className="flex items-start justify-between gap-4">
                     <span className="flex h-12 w-12 items-center justify-center rounded-[15px] bg-[#eaf2e8] text-[#557a5c]"><BookOpen size={20} strokeWidth={1.8} /></span>
-                    <BookStatusBadge status={book.status} />
+                    <BookStatusBadge status={book.status} label={book.statusLabel} />
                   </div>
                   <div className="mt-5 flex-1">
                     <h2 className="line-clamp-2 text-lg font-semibold leading-6 tracking-tight text-[#2c4034] group-hover:text-[#4f7959]">{book.title}</h2>

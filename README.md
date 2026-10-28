@@ -33,7 +33,7 @@ The example environment file contains development-only database and seed credent
     npm run build
     npm test --workspace=@bookleaf/server
 
-The seed account uses SEED_ADMIN_EMAIL, SEED_ADMIN_PASSWORD, and SEED_ADMIN_NAME. Seeding creates or updates only that admin account. It does not create sample authors, books, or tickets. Public registration cannot create an administrator.
+The seed account uses SEED_ADMIN_EMAIL, SEED_ADMIN_PASSWORD, and SEED_ADMIN_NAME. Seeding creates or updates that admin account and idempotently loads the supplied sample dataset of 10 authors and 18 books. It preserves the source author/book IDs and publishing statuses. New sample author accounts receive unique random passwords that are never printed or stored in plaintext. For local demos only, set `SEED_SAMPLE_AUTHOR_PASSWORD` in `server/.env` to give newly created sample accounts a shared password; the seed rejects this setting unless `NODE_ENV=development`. Existing accounts keep their current passwords on later seed runs. Public registration cannot create an administrator.
 
 ## Environment and AI
 

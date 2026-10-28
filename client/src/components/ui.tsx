@@ -34,14 +34,14 @@ export function TicketStatusBadge({ status }: { status: TicketStatus }) {
   return <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ring-inset ${styles[status]}`}>{labels[status]}</span>;
 }
 
-export function BookStatusBadge({ status }: { status: BookStatus }) {
+export function BookStatusBadge({ status, label }: { status: BookStatus; label?: string | null }) {
   const styles: Record<BookStatus, string> = {
     DRAFT: "bg-[#f2eee7] text-[#766248]",
     IN_REVIEW: "bg-[#eaf2ff] text-[#4267a8]",
     PUBLISHED: "bg-[#e7f4eb] text-[#39724b]",
   };
   const labels: Record<BookStatus, string> = { DRAFT: "Draft", IN_REVIEW: "In review", PUBLISHED: "Published" };
-  return <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${styles[status]}`}>{labels[status]}</span>;
+  return <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${styles[status]}`}>{label || labels[status]}</span>;
 }
 
 export function LoadingState({ label = "Loading your workspace…" }: { label?: string }) {

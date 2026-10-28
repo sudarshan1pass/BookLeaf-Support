@@ -4,7 +4,7 @@ import { getAttachmentPath } from "../support/attachments.js";
 import { generateResponseDraft } from "../ai/response.service.js";
 import type { ListTicketsQuery, UpdateTicketInput } from "./admin.schemas.js";
 
-const authorSelect = { id: true, fullName: true, email: true, createdAt: true } as const;
+const authorSelect = { id: true, fullName: true, email: true, phone: true, city: true, createdAt: true } as const;
 const bookInclude = { author: { select: authorSelect } };
 const ticketInclude = {
   author: { select: authorSelect },

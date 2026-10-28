@@ -4,17 +4,31 @@ import { getAttachmentPath, removeStoredAttachment, storeAttachment } from "../s
 import { triageTicket } from "../ai/ticket-triage.service.js";
 import type { CreateMessageInput, CreateTicketInput } from "./author.schemas.js";
 
-const safeAuthorSelect = { id: true, fullName: true, email: true } as const;
-const bookSelect = {
+const safeAuthorSelect = { id: true, fullName: true, email: true, phone: true, city: true } as const;
+const bookSummarySelect = {
   id: true,
   title: true,
   subtitle: true,
   genre: true,
   description: true,
   status: true,
+  statusLabel: true,
   isbn: true,
   createdAt: true,
   updatedAt: true,
+} as const;
+const bookDetailSelect = {
+  ...bookSummarySelect,
+  publicationDate: true,
+  mrp: true,
+  authorRoyaltyPerCopy: true,
+  totalCopiesSold: true,
+  totalRoyaltyEarned: true,
+  royaltyPaid: true,
+  royaltyPending: true,
+  lastRoyaltyPayoutDate: true,
+  printPartner: true,
+  availableOn: true,
 } as const;
 const ticketInclude = {
   messages: {
@@ -44,7 +58,7 @@ export async function getDashboard(authorId: string) {
     prisma.book.count({ where: { authorId } }),
     prisma.ticket.count({ where: { authorId } }),
     prisma.ticket.count({ where: { authorId, status: { in: ["OPEN", "IN_PROGRESS", "WAITING_ON_AUTHOR"] } } }),
-    prisma.book.findMany({ where: { authorId }, select: bookSelect, orderBy: { updatedAt: "desc" }, take: 4 }),
+    prisma.book.findMany({ where: { authorId }, select: bookSummarySelect, orderBy: { updatedAt: "desc" }, take: 4 }),
     prisma.ticket.findMany({
       where: { authorId },
       orderBy: { updatedAt: "desc" },
@@ -63,11 +77,11 @@ export async function getDashboard(authorId: string) {
 }
 
 export function listBooks(authorId: string) {
-  return prisma.book.findMany({ where: { authorId }, select: bookSelect, orderBy: { updatedAt: "desc" } });
+  return prisma.book.findMany({ where: { authorId }, select: bookSummarySelect, orderBy: { updatedAt: "desc" } });
 }
 
 export async function getBook(authorId: string, bookId: string) {
-  const book = await prisma.book.findFirst({ where: { id: bookId, authorId }, select: bookSelect });
+  const book = await prisma.book.findFirst({ where: { id: bookId, authorId }, select: bookDetailSelect });
   if (!book) throw new AppError(404, "BOOK_NOT_FOUND", "The book was not found.");
   return book;
 }

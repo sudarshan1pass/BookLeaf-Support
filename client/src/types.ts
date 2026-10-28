@@ -10,7 +10,7 @@ export type TicketCategory =
   | "GENERAL_INQUIRY";
 export type TicketPriority = "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
 
-export type Author = { id: string; fullName: string; email: string };
+export type Author = { id: string; fullName: string; email: string; phone?: string | null; city?: string | null };
 export type Book = {
   id: string;
   title: string;
@@ -18,7 +18,18 @@ export type Book = {
   genre: string | null;
   description: string | null;
   status: BookStatus;
+  statusLabel?: string | null;
   isbn: string | null;
+  publicationDate?: string | null;
+  mrp?: string | null;
+  authorRoyaltyPerCopy?: string | null;
+  totalCopiesSold?: number;
+  totalRoyaltyEarned?: string;
+  royaltyPaid?: string;
+  royaltyPending?: string;
+  lastRoyaltyPayoutDate?: string | null;
+  printPartner?: string | null;
+  availableOn?: string[];
   createdAt: string;
   updatedAt: string;
 };
