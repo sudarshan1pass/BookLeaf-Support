@@ -83,7 +83,7 @@ Docker Compose provides PostgreSQL for local development only. Vercel is configu
 
 ## Vercel frontend deployment
 
-Connect the Git repository to Vercel and set **Root Directory** to `.` (the repository root). `vercel.json` installs the npm workspaces, builds only the React client, and serves `client/dist`; the root `package.json` pins the build runtime to Node 24.x. Do not set the Root Directory to `client`, because Vercel then cannot access the root workspace manifest and lockfile. The Express API must be hosted separately and routed/configured for the deployed client before authenticated portal features will work.
+Connect the Git repository to Vercel and preferably set **Root Directory** to the repository root. The root `vercel.json` installs the npm workspaces, builds only the React client, and serves `client/dist`; the root `package.json` pins the build runtime to Node 24.x. A separate `client/vercel.json` also supports projects whose Root Directory is set to `client`, using that folder's package manifest directly without a parent-directory install command. The Express API must be hosted separately and routed/configured for the deployed client before authenticated portal features will work.
 
 Tests use mocked Prisma calls and do not require a database connection. They cover authentication, ownership boundaries, admin access, input validation, manual overrides, and isolated AI fallback behavior.
 # BookLeaf-Support
