@@ -29,6 +29,17 @@ app.use(
 app.use(requestId);
 app.use(express.json({ limit: "1mb" }));
 
+app.get("/", (_request, response) => {
+  response.status(200).json({
+    data: {
+      service: "BookLeaf Support API",
+      status: "ok",
+      health: "/api/health",
+    },
+    requestId: response.locals.requestId,
+  });
+});
+
 app.get("/api/health", (_request, response) => {
   response.status(200).json({ data: { status: "ok" }, requestId: response.locals.requestId });
 });
