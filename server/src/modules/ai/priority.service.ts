@@ -14,6 +14,7 @@ export async function scoreTicketPriority(subject: string, message: string) {
     max_output_tokens: 80,
     store: false,
   });
-  if (!response.output_parsed) throw new Error("AI_EMPTY_PRIORITY");
-  return response.output_parsed.priority;
+  const parsed = priorityOutput.safeParse(response.output_parsed);
+  if (!parsed.success) throw new Error("AI_INVALID_PRIORITY");
+  return parsed.data.priority;
 }

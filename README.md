@@ -37,9 +37,15 @@ The seed account uses SEED_ADMIN_EMAIL, SEED_ADMIN_PASSWORD, and SEED_ADMIN_NAME
 
 ## Environment and AI
 
-OPENAI_API_KEY is optional and is read only by the server. The client receives no OpenAI credentials. OPENAI_MODEL defaults to gpt-4o-mini; OPENAI_TIMEOUT_MS defaults to 8000. Classification and priority use separate structured JSON requests with bounded inputs and outputs, no automatic retries, and store: false. Ticket creation falls back to GENERAL_INQUIRY and MEDIUM if either request fails.
+Set the real `OPENAI_API_KEY` only in `server/.env`; never place it in `client/.env`, a `VITE_*` variable, or frontend code. `.gitignore` excludes `.env` files, and `server/.env.example` contains an empty key placeholder. `OPENAI_MODEL` defaults to `gpt-4o-mini`; `OPENAI_TIMEOUT_MS` defaults to 8000. Classification and priority use separate structured JSON requests with bounded inputs and outputs, no automatic retries, and `store: false`. Ticket creation falls back to `GENERAL_INQUIRY` and `MEDIUM` if either request fails.
 
-Set BOOKLEAF_KNOWLEDGE_BASE_PATH to a UTF-8 text or Markdown copy of the BookLeaf Knowledge Base. The default example path is knowledge/bookleaf.md, relative to the server working directory. The assignment PDF and its Knowledge Base were not present in the workspace when this code was implemented, so no Knowledge Base facts are packaged here. Without that file, the response prompt is instructed to produce only a neutral acknowledgement or request for details; admins can still write and send replies manually.
+Set `BOOKLEAF_KNOWLEDGE_BASE_PATH` to a UTF-8 text or Markdown copy of the BookLeaf Knowledge Base. The default example path is `knowledge/bookleaf.md`, relative to the server working directory. The assignment PDF and its Knowledge Base are not present in this workspace, so no company timelines or policies are packaged here. Without the file, the response prompt requires a neutral acknowledgement and a request for relevant details; it must not invent a timeline. Admins can still write and send replies manually.
+
+AI verification:
+
+- Run the mocked service/fallback checks with `npm test --workspace=@bookleaf/server`; these tests do not call OpenAI or need a key.
+- For a live classification/priority check, put the key in `server/.env`, restart the server, log in as an author, and submit a support ticket. The admin queue shows the resulting category and priority; provider failure leaves the ticket created with safe defaults.
+- For a live response-draft check, configure the Knowledge Base file, restart the server, log in as an admin, open a ticket, and use **AI draft**. Review and edit the draft before sending it.
 
 ## API
 

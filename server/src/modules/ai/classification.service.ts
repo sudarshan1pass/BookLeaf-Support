@@ -22,6 +22,7 @@ export async function classifyTicket(subject: string, message: string) {
     max_output_tokens: 80,
     store: false,
   });
-  if (!response.output_parsed) throw new Error("AI_EMPTY_CLASSIFICATION");
-  return response.output_parsed.category;
+  const parsed = classificationOutput.safeParse(response.output_parsed);
+  if (!parsed.success) throw new Error("AI_INVALID_CLASSIFICATION");
+  return parsed.data.category;
 }
