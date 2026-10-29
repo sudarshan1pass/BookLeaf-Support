@@ -1,5 +1,6 @@
 import { ArrowRight, BookOpenText, Feather, ShieldCheck, Sparkles } from "lucide-react";
 import { useState, type FormEvent } from "react";
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { ApiError } from "../lib/api";
@@ -12,14 +13,12 @@ export function LoginPage({ mode, portal = "author" }: { mode: "login" | "signup
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError(null);
     if (isSignup && password !== confirmPassword) {
-      setError("Your passwords don’t match.");
+      toast.error("Your passwords don’t match.");
       return;
     }
     setSubmitting(true);
@@ -27,8 +26,14 @@ export function LoginPage({ mode, portal = "author" }: { mode: "login" | "signup
       if (isSignup) await signup(fullName.trim(), email.trim(), password);
       else if (isAdmin) await loginAdmin(email.trim(), password);
       else await login(email.trim(), password);
+      toast.success(isSignup ? "Your author account is ready. Welcome to BookLeaf!" : isAdmin ? "Signed in to the admin portal." : "Welcome back!");
     } catch (reason) {
-      setError(reason instanceof ApiError && reason.status === 401 ? (isAdmin ? "We couldn’t find an administrator account with those details." : "We couldn’t find an author account with those details.") : reason instanceof Error ? reason.message : isSignup ? "Account creation failed. Please try again." : "Sign in failed. Please try again.");
+      const message = reason instanceof ApiError && reason.status === 401
+        ? (isAdmin ? "We couldn’t find an administrator account with those details." : "We couldn’t find an author account with those details.")
+        : reason instanceof Error
+          ? reason.message
+          : isSignup ? "Account creation failed. Please try again." : "Sign in failed. Please try again.";
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
@@ -66,7 +71,6 @@ export function LoginPage({ mode, portal = "author" }: { mode: "login" | "signup
             <div><label className="form-label" htmlFor="email">Email address</label><input id="email" className="field-input mt-2" type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" /></div>
             <div><div className="flex items-center justify-between"><label className="form-label" htmlFor="password">Password</label>{isSignup && <span className="text-[10px] text-[#9aa49c]">At least 12 characters</span>}</div><input id="password" className="field-input mt-2" type="password" autoComplete={isSignup ? "new-password" : "current-password"} minLength={isSignup ? 12 : undefined} required value={password} onChange={(event) => setPassword(event.target.value)} placeholder={isSignup ? "Create a password" : "Your password"} /></div>
             {isSignup && <div><label className="form-label" htmlFor="confirmPassword">Confirm password</label><input id="confirmPassword" className="field-input mt-2" type="password" autoComplete="new-password" minLength={12} required value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="Enter your password again" /></div>}
-            {error && <p role="alert" className="rounded-xl border border-[#f1d5ce] bg-[#fff8f6] px-4 py-3 text-sm text-[#9a5548]">{error}</p>}
             <button className="button-primary w-full justify-center py-3.5" disabled={submitting} type="submit">{submitting ? isSignup ? "Creating account…" : "Signing in…" : isSignup ? "Create account" : "Sign in"}<ArrowRight size={16} /></button>
           </form>
           {!isAdmin && <p className="mt-6 text-center text-sm text-[#7f8b82]">{isSignup ? "Already have an account?" : "New to BookLeaf?"} <Link className="font-semibold text-[#456f4e] hover:text-[#2f5438]" to={isSignup ? "/login" : "/signup"}>{isSignup ? "Sign in" : "Create an author account"}</Link></p>}

@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import toast from "react-hot-toast";
 import { apiRequest, ApiError } from "../lib/api";
 import type { Role } from "../types";
 
@@ -18,13 +19,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [ready, setReady] = useState(false);
 
-  const logout = useCallback(() => {
+  const clearSession = useCallback(() => {
     sessionStorage.removeItem("bookleaf_access_token");
     setUser(null);
   }, []);
 
+  const logout = useCallback(() => {
+    clearSession();
+    toast.success("You’ve been signed out.");
+  }, [clearSession]);
+
   useEffect(() => {
-    const handleExpired = () => logout();
+    const handleExpired = () => {
+      clearSession();
+      toast.error("Your session expired. Please sign in again.");
+    };
     window.addEventListener("bookleaf:auth-expired", handleExpired);
 
     const token = sessionStorage.getItem("bookleaf_access_token");
@@ -36,16 +45,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void apiRequest<{ user: AuthUser }>("/api/auth/me")
       .then(({ user: currentUser }) => {
         if (currentUser.role === "AUTHOR" || currentUser.role === "ADMIN") setUser(currentUser);
-        else logout();
+        else clearSession();
       })
       .catch((error: unknown) => {
         if (error instanceof ApiError && error.status !== 401) return;
-        logout();
+        clearSession();
       })
       .finally(() => setReady(true));
 
     return () => window.removeEventListener("bookleaf:auth-expired", handleExpired);
-  }, [logout]);
+  }, [clearSession]);
 
   const login = useCallback(async (email: string, password: string) => {
     const result = await apiRequest<{ user: AuthUser; accessToken: string }>("/api/auth/author/login", {
