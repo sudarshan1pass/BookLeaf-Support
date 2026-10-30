@@ -1,10 +1,23 @@
 import "dotenv/config";
 import { z } from "zod";
 
+const clientOriginSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .transform((origin) => {
+    if (/^https?:\/\//i.test(origin)) return origin;
+    if (/^(localhost|127(?:\.\d+){3})(:\d+)?(?:\/|$)/i.test(origin)) {
+      return `http://${origin}`;
+    }
+    return `https://${origin}`;
+  })
+  .pipe(z.url());
+
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().int().min(1).max(65_535).default(3000),
-  CLIENT_ORIGIN: z.string().url().default("http://localhost:5173"),
+  CLIENT_ORIGIN: clientOriginSchema.default("http://localhost:5173"),
   CLIENT_ORIGINS: z
     .string()
     .default("http://localhost:5173,https://bookleaf-support-mauve.vercel.app,https://bookleaf-support-git-main-sudarshans-projects-b011b1eb.vercel.app")
