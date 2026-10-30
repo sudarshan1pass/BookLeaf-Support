@@ -9,7 +9,9 @@
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "build": "npm run build --workspace=@bookleaf/server && npm run build --workspace=@bookleaf/client",
-    "check": "npm run check --workspace=@bookleaf/server && npm run build --workspace=@bookleaf/client"
+    "check": "npm run check --workspace=@bookleaf/server && npm run build --workspace=@bookleaf/client",
+    "prestart": "npm run db:deploy --workspace=@bookleaf/server",
+    "start": "node server/dist/src/server.js"
   },
   "engines": {
     "node": "24.x",

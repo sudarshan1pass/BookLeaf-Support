@@ -87,7 +87,7 @@ Ticket statuses are OPEN, IN_PROGRESS, WAITING_ON_AUTHOR, RESOLVED, and CLOSED. 
 
 JWTs are short-lived and currently stored in browser sessionStorage. Attachments are stored on the server's local disk under server/uploads/. The Socket.IO handshake authenticates the JWT, but ticket rooms, event publishing, and client-side realtime refresh are not implemented yet; ticket updates currently use HTTP requests and reloads.
 
-Docker Compose provides PostgreSQL for local development only. Vercel is configured to build the static client; the Express API runs on a separate production host. The server's `prestart` script runs `prisma migrate deploy` before `npm start`; the server entrypoint also applies pending migrations when launched directly, such as with `node dist/src/server.js`. Review upload storage, TLS, secret management, database backups, and monitoring before production deployment.
+Docker Compose provides PostgreSQL for local development only. Vercel is configured to build the static client; the Express API runs on a separate production host. Render should use the repository root as its Root Directory, `npm ci && npm run build --workspace=@bookleaf/server` as its Build Command, and `npm start` as its Start Command. The root `prestart` script runs Prisma migrations from the server workspace using the service's `DATABASE_URL` before starting the compiled API. Do not set `DATABASE_URL` to localhost on Render; configure the production PostgreSQL connection string in the Render service environment. The API binds to `0.0.0.0` on Render's injected `PORT` (with port 3000 for local development). Review upload storage, TLS, secret management, database backups, and monitoring before production deployment.
 
 ## Vercel frontend deployment
 

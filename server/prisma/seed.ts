@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { randomBytes } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import bcrypt from "bcryptjs";

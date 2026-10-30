@@ -1,5 +1,12 @@
-import "dotenv/config";
+import { config as loadDotEnv } from "dotenv";
 import { z } from "zod";
+
+const isRenderRuntime = process.env.RENDER === "true";
+
+// Render supplies its own environment. Never let a local .env file fill in or
+// replace production configuration; local development still reads server/.env.
+if (!isRenderRuntime && process.env.NODE_ENV !== "production") loadDotEnv();
+const isProductionRuntime = isRenderRuntime || process.env.NODE_ENV === "production";
 
 const clientOriginSchema = z
   .string()
@@ -39,6 +46,24 @@ const envSchema = z.object({
 
 const parsed = envSchema.safeParse(process.env);
 
+function isLoopbackDatabaseUrl(value: string | undefined) {
+  if (!value) return false;
+
+  try {
+    return ["localhost", "127.0.0.1", "::1"].includes(new URL(value).hostname.toLowerCase());
+  } catch {
+    return false;
+  }
+}
+
+if (isProductionRuntime && !process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL must be configured in the production service environment.");
+}
+
+if (isProductionRuntime && isLoopbackDatabaseUrl(process.env.DATABASE_URL)) {
+  throw new Error("DATABASE_URL points to localhost in production. Configure a reachable PostgreSQL service URL.");
+}
+
 if (!parsed.success) {
   const issues = parsed.error.issues
     .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
@@ -46,4 +71,9 @@ if (!parsed.success) {
   throw new Error(`Invalid server environment configuration:\n${issues}`);
 }
 
-export const env = parsed.data;
+export const env = {
+  ...parsed.data,
+  // Render is always a production runtime, even if a copied local .env value
+  // or dashboard variable incorrectly says development.
+  NODE_ENV: isRenderRuntime ? "production" as const : parsed.data.NODE_ENV,
+};
