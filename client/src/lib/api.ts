@@ -11,6 +11,12 @@ export class ApiError extends Error {
 
 type ApiEnvelope<T> = { data: T };
 
+const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "").replace(/\/+$/, "");
+
+function apiUrl(path: string) {
+  return `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
 export async function apiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
   const headers = new Headers(options.headers);
   const token = sessionStorage.getItem("bookleaf_access_token");
@@ -20,7 +26,7 @@ export async function apiRequest<T>(path: string, options: RequestInit = {}): Pr
     headers.set("Content-Type", "application/json");
   }
 
-  const response = await fetch(path, { ...options, headers });
+  const response = await fetch(apiUrl(path), { ...options, headers });
   if (response.status === 204) return undefined as T;
 
   const payload = (await response.json().catch(() => null)) as
@@ -40,7 +46,7 @@ export async function apiRequest<T>(path: string, options: RequestInit = {}): Pr
 
 export async function downloadFile(path: string, filename: string) {
   const token = sessionStorage.getItem("bookleaf_access_token");
-  const response = await fetch(path, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+  const response = await fetch(apiUrl(path), { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
   if (!response.ok) {
     if (response.status === 401 && token) window.dispatchEvent(new Event("bookleaf:auth-expired"));
     const payload = await response.json().catch(() => null) as { error?: { message?: string } } | null;

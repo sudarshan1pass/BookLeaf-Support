@@ -21,6 +21,8 @@ From the repository root:
 
 The author portal runs at http://localhost:5173. The API and authenticated Socket.IO server run at http://localhost:3000. Visit /signup to create an author account or /admin/login to sign in as an administrator.
 
+The client reads its backend URL from `VITE_API_URL`. Local development can use `client/.env` to point to the live Render API or leave it unset to use the Vite proxy at `http://localhost:3000`. Production builds use the public backend URL in `client/.env.production`; a Vercel `VITE_API_URL` environment variable can override it. Set the Render backend's `CLIENT_ORIGIN` to the exact deployed frontend origin (for example, `https://your-project.vercel.app`) so browser API requests pass CORS validation.
+
 The example environment file contains development-only database and seed credentials. Replace them for any shared or deployed environment. Set DATABASE_URL before running migrations when using an existing PostgreSQL instance.
 
 ## Useful commands
