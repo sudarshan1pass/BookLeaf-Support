@@ -7,7 +7,7 @@ const envSchema = z.object({
   CLIENT_ORIGIN: z.string().url().default("http://localhost:5173"),
   CLIENT_ORIGINS: z
     .string()
-    .default("http://localhost:5173,https://bookleaf-support-mauve.vercel.app")
+    .default("http://localhost:5173,https://bookleaf-support-mauve.vercel.app,https://bookleaf-support-git-main-sudarshans-projects-b011b1eb.vercel.app")
     .transform((origins) => origins.split(",").map((origin) => origin.trim()).filter(Boolean))
     .pipe(z.array(z.url()).min(1)),
   DATABASE_URL: z
