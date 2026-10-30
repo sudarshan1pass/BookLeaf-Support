@@ -4,9 +4,10 @@ import { env } from "../config/env.js";
 import { authenticateToken } from "../middleware/authenticate.js";
 
 export function createSocketServer(httpServer: HttpServer): SocketIOServer {
+  const allowedClientOrigins = [...new Set([env.CLIENT_ORIGIN, ...env.CLIENT_ORIGINS])];
   const io = new SocketIOServer(httpServer, {
     cors: {
-      origin: env.CLIENT_ORIGIN,
+      origin: allowedClientOrigins,
       credentials: true,
       methods: ["GET", "POST"],
     },

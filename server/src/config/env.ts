@@ -5,6 +5,11 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().int().min(1).max(65_535).default(3000),
   CLIENT_ORIGIN: z.string().url().default("http://localhost:5173"),
+  CLIENT_ORIGINS: z
+    .string()
+    .default("http://localhost:5173,https://bookleaf-support-mauve.vercel.app")
+    .transform((origins) => origins.split(",").map((origin) => origin.trim()).filter(Boolean))
+    .pipe(z.array(z.url()).min(1)),
   DATABASE_URL: z
     .string()
     .startsWith("postgres", "DATABASE_URL must be a PostgreSQL connection URL"),

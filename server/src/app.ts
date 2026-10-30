@@ -10,13 +10,14 @@ import { authorRouter } from "./modules/author/author.routes.js";
 import { adminRouter } from "./modules/admin/admin.routes.js";
 
 export const app = express();
+const allowedClientOrigins = new Set([env.CLIENT_ORIGIN, ...env.CLIENT_ORIGINS]);
 
 app.disable("x-powered-by");
 app.use(helmet());
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || origin === env.CLIENT_ORIGIN) {
+      if (!origin || allowedClientOrigins.has(origin)) {
         callback(null, true);
         return;
       }
